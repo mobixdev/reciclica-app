@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { IonicModule } from '@ionic/angular';
-import { AppRoutingModule } from 'src/app/app-routing.module';
 import { RegisterPageModule } from './register.module';
 import { RegisterPage } from './register.page';
 
@@ -17,7 +17,9 @@ describe('RegisterPage', () => {
       declarations: [ RegisterPage ],
       imports: [
         IonicModule.forRoot(),
-        AppRoutingModule,
+        RouterTestingModule.withRoutes([
+          { path: "home", loadChildren: () => import('./../../pages/home/home.module').then( m => m.HomePageModule) }
+        ]),
         ReactiveFormsModule,
         RegisterPageModule
       ]
