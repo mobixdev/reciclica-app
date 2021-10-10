@@ -2,12 +2,10 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { AngularFireModule } from '@angular/fire';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, NavController, ToastController } from '@ionic/angular';
 import { Store, StoreModule } from '@ngrx/store';
-import { Observable, of, throwError } from 'rxjs';
 import { AppRoutingModule } from 'src/app/app-routing.module';
 import { User } from 'src/app/model/user/User';
-import { AuthService } from 'src/app/services/auth/auth.service';
 import { environment } from 'src/environments/environment';
 import { AppState } from 'src/store/AppState';
 import { loadingReducer } from 'src/store/loading/loading.reducers';
@@ -23,6 +21,7 @@ describe('LoginPage', () => {
   let page;
   let store: Store<AppState>;
   let toastController: ToastController;
+  let navController: NavController;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -42,6 +41,7 @@ describe('LoginPage', () => {
     router = TestBed.get(Router);
     store = TestBed.get(Store);
     toastController = TestBed.get(ToastController);
+    navController = TestBed.get(NavController);
 
     component = fixture.componentInstance;
     page = fixture.debugElement.nativeElement;
@@ -115,7 +115,7 @@ describe('LoginPage', () => {
   })
 
   it('given user is logging in, when success, then hide loading and send user to home page', () => {
-    spyOn(router, 'navigate');
+    spyOn(navController, 'navigateRoot');
 
     fixture.detectChanges();
     store.dispatch(login({email: "valid@email.com", password: "anyPassword"}));
@@ -127,7 +127,7 @@ describe('LoginPage', () => {
     store.select('login').subscribe(loginState => {
       expect(loginState.isLoggedIn).toBeTruthy();
     })
-    expect(router.navigate).toHaveBeenCalledWith(['home']);
+    expect(navController.navigateRoot).toHaveBeenCalledWith('home');
   })
 
   it('given user is logging in, when fail, then hide loading and show error message', () => {
