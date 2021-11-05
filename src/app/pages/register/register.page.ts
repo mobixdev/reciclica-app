@@ -9,6 +9,8 @@ import { login } from 'src/store/login/login.actions';
 import { register } from 'src/store/register/register.actions';
 import { RegisterState } from 'src/store/register/RegisterState';
 import { RegisterPageForm } from './form/register.page.form';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { LocationService } from 'src/app/services/location/location.service';
 
 declare var google;
 
@@ -25,13 +27,15 @@ export class RegisterPage implements OnInit, OnDestroy {
 
   registerStateSubscription: Subscription;
 
-  constructor(private formBuilder: FormBuilder, private store: Store<AppState>,
-    private toastController: ToastController) { }
+  constructor(private formBuilder: FormBuilder, private store: Store<AppState>, private geolocation: Geolocation,
+    private toastController: ToastController, private locationService: LocationService) { }
 
   ngOnInit() {
     this.createForm();
 
     this.watchRegisterState();
+
+    this.fillUserAddressWithUserCurrentPosition();
   }
 
   ngOnDestroy() {
@@ -53,6 +57,14 @@ export class RegisterPage implements OnInit, OnDestroy {
     if (this.registerForm.getForm().valid){
       this.store.dispatch(register({userRegister: this.registerForm.getForm().value}));
     }
+  }
+
+  private fillUserAddressWithUserCurrentPosition() {
+    this.geolocation.getCurrentPosition().then(position => {
+      this.locationService.geocode(position.coords).subscribe(result => {
+        this.registerForm.setAddress(result);
+      });
+    })
   }
 
   private createForm() {
